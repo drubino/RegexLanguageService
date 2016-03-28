@@ -56,7 +56,7 @@ namespace RegexLanguageService
 
         public override AuthoringScope ParseSource(ParseRequest req)
         {
-            throw new NotImplementedException();
+            return new RegexAuthoringScope();
         }
 
         #endregion //Methods
