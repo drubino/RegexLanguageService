@@ -1,15 +1,4 @@
-﻿//***************************************************************************
-// 
-//    Copyright (c) Microsoft Corporation. All rights reserved.
-//    This code is licensed under the Visual Studio SDK license terms.
-//    THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-//    ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-//    IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-//    PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//***************************************************************************
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,42 +10,37 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
 using RegexLanguageService;
 
-namespace OokLanguage
+namespace RegexLanguageService.Intellisense
 {
     [Export(typeof(ICompletionSourceProvider))]
     [ContentType(RegexStrings.RegexContentType)]
-    [Name("ookCompletion")]
-    class OokCompletionSourceProvider : ICompletionSourceProvider
+    [Name(RegexStrings.RegexCompletion)]
+    class RegexCompletionSourceProvider : ICompletionSourceProvider
     {
         public ICompletionSource TryCreateCompletionSource(ITextBuffer textBuffer)
         {
-            return new OokCompletionSource(textBuffer);
+            return new RegexCompletionSource(textBuffer);
         }
     }
 
-    class OokCompletionSource : ICompletionSource
+    class RegexCompletionSource : ICompletionSource
     {
-        private ITextBuffer _buffer;
-        private bool _disposed = false;
+        private ITextBuffer textBuffer;
+        private bool isDisposed = false;
         
-        public OokCompletionSource(ITextBuffer buffer)
+        public RegexCompletionSource(ITextBuffer buffer)
         {
-            _buffer = buffer;
+            this.textBuffer = buffer;
         }
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
-            if (_disposed)
-                throw new ObjectDisposedException("OokCompletionSource");
+            if (this.isDisposed)
+                throw new ObjectDisposedException(nameof(RegexCompletionSource));
 
-            List<Completion> completions = new List<Completion>()
-            {
-                new Completion("Ook!"),
-                new Completion("Ook."),
-                new Completion("Ook?")
-            };
+            List<Completion> completions = new List<Completion>();
             
-            ITextSnapshot snapshot = _buffer.CurrentSnapshot;
+            ITextSnapshot snapshot = this.textBuffer.CurrentSnapshot;
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
 
             if (triggerPoint == null)
@@ -77,7 +61,7 @@ namespace OokLanguage
 
         public void Dispose()
         {
-            _disposed = true;
+            isDisposed = true;
         }
     }
 }

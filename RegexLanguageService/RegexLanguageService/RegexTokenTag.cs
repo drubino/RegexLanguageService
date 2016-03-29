@@ -24,11 +24,11 @@ namespace RegexLanguageService
 
     public class RegexTokenTag : ITag 
     {
-        public RegexTokenTypes type { get; private set; }
+        public RegexTokenTypes Type { get; private set; }
 
         public RegexTokenTag(RegexTokenTypes type)
         {
-            this.type = type;
+            this.Type = type;
         }
     }
 
@@ -42,9 +42,6 @@ namespace RegexLanguageService
         {
             _buffer = buffer;
             regexTokenTypes = new Dictionary<string, RegexTokenTypes>();
-            regexTokenTypes["ook!"] = RegexTokenTypes.OokExclamation;
-            regexTokenTypes["ook."] = RegexTokenTypes.OokPeriod;
-            regexTokenTypes["ook?"] = RegexTokenTypes.OokQuestion;
             regexTokenTypes[RegexStrings.RegexQuantifier] = RegexTokenTypes.RegexQuantifier;
         }
 
@@ -65,14 +62,7 @@ namespace RegexLanguageService
 
                 foreach (var token in tokens)
                 {
-                    if (regexTokenTypes.ContainsKey(token))
-                    {
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
-                        if( tokenSpan.IntersectsWith(curSpan) ) 
-                            yield return new TagSpan<RegexTokenTag>(tokenSpan, 
-                                                                  new RegexTokenTag(regexTokenTypes[token]));
-                    }
-                    else if (regexQuantifiers.Contains(token))
+                    if (regexQuantifiers.Contains(token))
                     {
                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
                         if (tokenSpan.IntersectsWith(curSpan))

@@ -12,5 +12,6 @@ namespace RegexLanguageService
         public const string RegexFileExtension = ".rex";
         public const string RegexContentType = "Regex";
         public const string RegexQuickInfo = "RegexQuickInfo";
+        public const string RegexCompletion = "RegexCompletion";
     }
 }

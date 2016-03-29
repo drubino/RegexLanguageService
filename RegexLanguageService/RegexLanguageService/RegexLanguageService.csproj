@@ -49,7 +49,7 @@
     <Compile Include="Classification\RegexClassifier.cs" />
     <Compile Include="Intellisense\CompletionController.cs" />
     <Compile Include="Intellisense\CompletionSource.cs" />
-    <Compile Include="Intellisense\OokQuickInfoSource.cs" />
+    <Compile Include="Intellisense\RegexQuickInfoSource.cs" />
     <Compile Include="Intellisense\QuickInfoController.cs" />
     <Compile Include="Intellisense\QuickInfoControllerProvider.cs" />
     <Compile Include="RegexTokenTag.cs" />

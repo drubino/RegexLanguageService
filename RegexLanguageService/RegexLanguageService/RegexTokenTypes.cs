@@ -7,6 +7,6 @@ namespace RegexLanguageService
 {
     public enum RegexTokenTypes
     {
-       OokExclamation, OokQuestion, OokPeriod, RegexQuantifier
+       RegexQuantifier
     }
 }

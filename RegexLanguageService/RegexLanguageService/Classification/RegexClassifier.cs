@@ -33,11 +33,8 @@ namespace RegexLanguageService.Classification
 
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-
-            ITagAggregator<RegexTokenTag> ookTagAggregator = 
-                                            aggregatorFactory.CreateTagAggregator<RegexTokenTag>(buffer);
-
-            return new RegexClassifier(buffer, ookTagAggregator, ClassificationTypeRegistry) as ITagger<T>;
+            var regexTagAggregator = aggregatorFactory.CreateTagAggregator<RegexTokenTag>(buffer);
+            return new RegexClassifier(buffer, regexTagAggregator, ClassificationTypeRegistry) as ITagger<T>;
         }
     }
 
@@ -57,9 +54,6 @@ namespace RegexLanguageService.Classification
             textBuffer = buffer;
             tagAggregator = regexTagAggregator;
             regexTokenTypes = new Dictionary<RegexTokenTypes, IClassificationType>();
-            regexTokenTypes[RegexTokenTypes.OokExclamation] = typeService.GetClassificationType("ook!");
-            regexTokenTypes[RegexTokenTypes.OokPeriod] = typeService.GetClassificationType("ook.");
-            regexTokenTypes[RegexTokenTypes.OokQuestion] = typeService.GetClassificationType("ook?");
             regexTokenTypes[RegexTokenTypes.RegexQuantifier] = typeService.GetClassificationType(RegexStrings.RegexQuantifier);
         }
 
@@ -79,7 +73,7 @@ namespace RegexLanguageService.Classification
                 var tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
                 yield return 
                     new TagSpan<ClassificationTag>(tagSpans[0], 
-                                                   new ClassificationTag(regexTokenTypes[tagSpan.Tag.type]));
+                                                   new ClassificationTag(regexTokenTypes[tagSpan.Tag.Type]));
             }
         }
     }
