@@ -19,11 +19,12 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
+using RegexLanguageService;
 
 namespace OokLanguage
 {
     [Export(typeof(ICompletionSourceProvider))]
-    [ContentType("ook!")]
+    [ContentType(RegexStrings.RegexContentType)]
     [Name("ookCompletion")]
     class OokCompletionSourceProvider : ICompletionSourceProvider
     {

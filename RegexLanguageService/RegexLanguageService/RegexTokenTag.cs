@@ -9,37 +9,36 @@ using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using RegexLanguageService;
 
-namespace OokLanguage
+namespace RegexLanguageService
 {
     [Export(typeof(ITaggerProvider))]
-    [ContentType("ook!")]
-    [TagType(typeof(OokTokenTag))]
-    internal sealed class OokTokenTagProvider : ITaggerProvider
+    [ContentType(RegexStrings.RegexContentType)]
+    [TagType(typeof(RegexTokenTag))]
+    internal sealed class RegexTokenTagProvider : ITaggerProvider
     {
-
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
-            return new OokTokenTagger(buffer) as ITagger<T>;
+            return new RegexTokenTagger(buffer) as ITagger<T>;
         }
     }
 
-    public class OokTokenTag : ITag 
+    public class RegexTokenTag : ITag 
     {
         public RegexTokenTypes type { get; private set; }
 
-        public OokTokenTag(RegexTokenTypes type)
+        public RegexTokenTag(RegexTokenTypes type)
         {
             this.type = type;
         }
     }
 
-    internal sealed class OokTokenTagger : ITagger<OokTokenTag>
+    internal sealed class RegexTokenTagger : ITagger<RegexTokenTag>
     {
 
         ITextBuffer _buffer;
         IDictionary<string, RegexTokenTypes> regexTokenTypes;
 
-        internal OokTokenTagger(ITextBuffer buffer)
+        internal RegexTokenTagger(ITextBuffer buffer)
         {
             _buffer = buffer;
             regexTokenTypes = new Dictionary<string, RegexTokenTypes>();
@@ -55,7 +54,7 @@ namespace OokLanguage
             remove { }
         }
 
-        public IEnumerable<ITagSpan<OokTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        public IEnumerable<ITagSpan<RegexTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
 
             foreach (SnapshotSpan curSpan in spans)
@@ -70,15 +69,15 @@ namespace OokLanguage
                     {
                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
                         if( tokenSpan.IntersectsWith(curSpan) ) 
-                            yield return new TagSpan<OokTokenTag>(tokenSpan, 
-                                                                  new OokTokenTag(regexTokenTypes[token]));
+                            yield return new TagSpan<RegexTokenTag>(tokenSpan, 
+                                                                  new RegexTokenTag(regexTokenTypes[token]));
                     }
                     else if (regexQuantifiers.Contains(token))
                     {
                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
                         if (tokenSpan.IntersectsWith(curSpan))
-                            yield return new TagSpan<OokTokenTag>(tokenSpan,
-                                                                  new OokTokenTag(regexTokenTypes[RegexStrings.RegexQuantifier]));
+                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
+                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexQuantifier]));
                     }
 
                     //add an extra char location because of the space

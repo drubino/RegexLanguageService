@@ -46,14 +46,14 @@
   <ItemGroup>
     <Compile Include="Classification\ClassificationFormat.cs" />
     <Compile Include="Classification\ClassificationType.cs" />
-    <Compile Include="Classification\OokClassifier.cs" />
+    <Compile Include="Classification\RegexClassifier.cs" />
     <Compile Include="Intellisense\CompletionController.cs" />
     <Compile Include="Intellisense\CompletionSource.cs" />
     <Compile Include="Intellisense\OokQuickInfoSource.cs" />
     <Compile Include="Intellisense\QuickInfoController.cs" />
     <Compile Include="Intellisense\QuickInfoControllerProvider.cs" />
-    <Compile Include="OokTokenTag.cs" />
-    <Compile Include="OokTokenTypes.cs" />
+    <Compile Include="RegexTokenTag.cs" />
+    <Compile Include="RegexTokenTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegexStrings.cs" />
   </ItemGroup>
@@ -62,7 +62,7 @@
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
-    <None Include="test.ook" />
+    <None Include="test.rex" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="index.html" />

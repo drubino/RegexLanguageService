@@ -23,13 +23,14 @@ using Microsoft.VisualStudio.Utilities;
 using Microsoft.VisualStudio;
 using System.Windows;
 using System.Runtime.InteropServices;
+using RegexLanguageService;
 
 namespace OokLanguage
 {
     #region Command Filter
 
     [Export(typeof(IVsTextViewCreationListener))]
-    [ContentType("ook!")]
+    [ContentType(RegexStrings.RegexContentType)]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
     internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener
     {

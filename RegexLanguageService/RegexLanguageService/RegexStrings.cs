@@ -9,7 +9,7 @@ namespace RegexLanguageService
     public static class RegexStrings
     {
         public const string RegexQuantifier = "RegexQuantifier";
-        public const string RegexFileExtension = ".rx";
+        public const string RegexFileExtension = ".rex";
         public const string RegexContentType = "Regex";
         public const string RegexQuickInfo = "RegexQuickInfo";
     }

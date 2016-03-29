@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Tagging;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Utilities;
+using RegexLanguageService;
 
 namespace OokLanguage
 {
@@ -26,7 +27,7 @@ namespace OokLanguage
     /// Factory for quick info sources
     /// </summary>
     [Export(typeof(IQuickInfoSourceProvider))]
-    [ContentType("ook!")]
+    [ContentType(RegexStrings.RegexContentType)]
     [Name("ookQuickInfo")]
     class OokQuickInfoSourceProvider : IQuickInfoSourceProvider
     {
@@ -36,7 +37,7 @@ namespace OokLanguage
 
         public IQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
         {
-            return new OokQuickInfoSource(textBuffer, aggService.CreateTagAggregator<OokTokenTag>(textBuffer));
+            return new OokQuickInfoSource(textBuffer, aggService.CreateTagAggregator<RegexTokenTag>(textBuffer));
         }
     }
 
@@ -45,12 +46,12 @@ namespace OokLanguage
     /// </summary>
     class OokQuickInfoSource : IQuickInfoSource
     {
-        private ITagAggregator<OokTokenTag> _aggregator;
+        private ITagAggregator<RegexTokenTag> _aggregator;
         private ITextBuffer _buffer;
         private bool _disposed = false;
 
 
-        public OokQuickInfoSource(ITextBuffer buffer, ITagAggregator<OokTokenTag> aggregator)
+        public OokQuickInfoSource(ITextBuffer buffer, ITagAggregator<RegexTokenTag> aggregator)
         {
             _aggregator = aggregator;
             _buffer = buffer;
@@ -71,7 +72,7 @@ namespace OokLanguage
             if (triggerPoint == null)
                 return;
 
-            foreach (IMappingTagSpan<OokTokenTag> curTag in _aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)))
+            foreach (IMappingTagSpan<RegexTokenTag> curTag in _aggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)))
             {
                 if (curTag.Tag.type == RegexTokenTypes.OokExclamation)
                 {
