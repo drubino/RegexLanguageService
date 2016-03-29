@@ -16,8 +16,8 @@ using System.Text;
 
 namespace OokLanguage
 {
-    public enum OokTokenTypes
+    public enum RegexTokenTypes
     {
-       OokExclamation, OokQuestion, OokPeriod
+       OokExclamation, OokQuestion, OokPeriod, RegexQuantifier
     }
 }

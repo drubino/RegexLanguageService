@@ -1,25 +1,16 @@
-﻿//***************************************************************************
-// 
-//    Copyright (c) Microsoft Corporation. All rights reserved.
-//    This code is licensed under the Visual Studio SDK license terms.
-//    THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
-//    ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
-//    IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
-//    PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
-//
-//***************************************************************************
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Linq;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Utilities;
+using RegexLanguageService;
 
 namespace OokLanguage
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.Composition;
-    using Microsoft.VisualStudio.Text;
-    using Microsoft.VisualStudio.Text.Classification;
-    using Microsoft.VisualStudio.Text.Editor;
-    using Microsoft.VisualStudio.Text.Tagging;
-    using Microsoft.VisualStudio.Utilities;
-
     [Export(typeof(ITaggerProvider))]
     [ContentType("ook!")]
     [TagType(typeof(OokTokenTag))]
@@ -34,9 +25,9 @@ namespace OokLanguage
 
     public class OokTokenTag : ITag 
     {
-        public OokTokenTypes type { get; private set; }
+        public RegexTokenTypes type { get; private set; }
 
-        public OokTokenTag(OokTokenTypes type)
+        public OokTokenTag(RegexTokenTypes type)
         {
             this.type = type;
         }
@@ -46,15 +37,16 @@ namespace OokLanguage
     {
 
         ITextBuffer _buffer;
-        IDictionary<string, OokTokenTypes> _ookTypes;
+        IDictionary<string, RegexTokenTypes> regexTokenTypes;
 
         internal OokTokenTagger(ITextBuffer buffer)
         {
             _buffer = buffer;
-            _ookTypes = new Dictionary<string, OokTokenTypes>();
-            _ookTypes["ook!"] = OokTokenTypes.OokExclamation;
-            _ookTypes["ook."] = OokTokenTypes.OokPeriod;
-            _ookTypes["ook?"] = OokTokenTypes.OokQuestion;
+            regexTokenTypes = new Dictionary<string, RegexTokenTypes>();
+            regexTokenTypes["ook!"] = RegexTokenTypes.OokExclamation;
+            regexTokenTypes["ook."] = RegexTokenTypes.OokPeriod;
+            regexTokenTypes["ook?"] = RegexTokenTypes.OokQuestion;
+            regexTokenTypes[RegexStrings.RegexQuantifier] = RegexTokenTypes.RegexQuantifier;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged
@@ -68,25 +60,38 @@ namespace OokLanguage
 
             foreach (SnapshotSpan curSpan in spans)
             {
-                ITextSnapshotLine containingLine = curSpan.Start.GetContainingLine();
-                int curLoc = containingLine.Start.Position;
-                string[] tokens = containingLine.GetText().ToLower().Split(' ');
+                var containingLine = curSpan.Start.GetContainingLine();
+                var currentLocation = containingLine.Start.Position;
+                var tokens = containingLine.GetText().ToLower().Split(' ');
 
-                foreach (string ookToken in tokens)
+                foreach (var token in tokens)
                 {
-                    if (_ookTypes.ContainsKey(ookToken))
+                    if (regexTokenTypes.ContainsKey(token))
                     {
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(curLoc, ookToken.Length));
+                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
                         if( tokenSpan.IntersectsWith(curSpan) ) 
                             yield return new TagSpan<OokTokenTag>(tokenSpan, 
-                                                                  new OokTokenTag(_ookTypes[ookToken]));
+                                                                  new OokTokenTag(regexTokenTypes[token]));
+                    }
+                    else if (regexQuantifiers.Contains(token))
+                    {
+                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
+                        if (tokenSpan.IntersectsWith(curSpan))
+                            yield return new TagSpan<OokTokenTag>(tokenSpan,
+                                                                  new OokTokenTag(regexTokenTypes[RegexStrings.RegexQuantifier]));
                     }
 
                     //add an extra char location because of the space
-                    curLoc += ookToken.Length + 1;
+                    currentLocation += token.Length + 1;
                 }
             }
-            
         }
+
+        private static string[] regexQuantifiers = new[]
+        {
+            "?",
+            "*",
+            "+"
+        };
     }
 }

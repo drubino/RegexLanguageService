@@ -12,6 +12,7 @@
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
+using RegexLanguageService;
 
 namespace OokLanguage
 {
@@ -39,6 +40,13 @@ namespace OokLanguage
         [Export(typeof(ClassificationTypeDefinition))]
         [Name("ook.")]
         internal static ClassificationTypeDefinition ookPeriod = null;
+
+        /// <summary>
+        /// Defines the "ookPeriod" classification type.
+        /// </summary>
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(RegexStrings.RegexQuantifier)]
+        internal static ClassificationTypeDefinition regexQuantifier = null;
 
         #endregion
     }

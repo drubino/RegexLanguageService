@@ -55,6 +55,7 @@
     <Compile Include="OokTokenTag.cs" />
     <Compile Include="OokTokenTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RegexStrings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

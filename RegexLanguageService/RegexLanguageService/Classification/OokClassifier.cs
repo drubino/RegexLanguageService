@@ -19,7 +19,7 @@ namespace OokLanguage
     using Microsoft.VisualStudio.Text.Editor;
     using Microsoft.VisualStudio.Text.Tagging;
     using Microsoft.VisualStudio.Utilities;
-
+    using RegexLanguageService;
     [Export(typeof(ITaggerProvider))]
     [ContentType("ook!")]
     [TagType(typeof(ClassificationTag))]
@@ -56,7 +56,7 @@ namespace OokLanguage
     {
         ITextBuffer _buffer;
         ITagAggregator<OokTokenTag> _aggregator;
-        IDictionary<OokTokenTypes, IClassificationType> _ookTypes;
+        IDictionary<RegexTokenTypes, IClassificationType> _ookTypes;
 
         /// <summary>
         /// Construct the classifier and define search tokens
@@ -67,10 +67,11 @@ namespace OokLanguage
         {
             _buffer = buffer;
             _aggregator = ookTagAggregator;
-            _ookTypes = new Dictionary<OokTokenTypes, IClassificationType>();
-            _ookTypes[OokTokenTypes.OokExclamation] = typeService.GetClassificationType("ook!");
-            _ookTypes[OokTokenTypes.OokPeriod] = typeService.GetClassificationType("ook.");
-            _ookTypes[OokTokenTypes.OokQuestion] = typeService.GetClassificationType("ook?");
+            _ookTypes = new Dictionary<RegexTokenTypes, IClassificationType>();
+            _ookTypes[RegexTokenTypes.OokExclamation] = typeService.GetClassificationType("ook!");
+            _ookTypes[RegexTokenTypes.OokPeriod] = typeService.GetClassificationType("ook.");
+            _ookTypes[RegexTokenTypes.OokQuestion] = typeService.GetClassificationType("ook?");
+            _ookTypes[RegexTokenTypes.RegexQuantifier] = typeService.GetClassificationType(RegexStrings.RegexQuantifier);
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged
