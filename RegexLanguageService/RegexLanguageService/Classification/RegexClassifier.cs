@@ -55,6 +55,9 @@ namespace RegexLanguageService.Classification
             tagAggregator = regexTagAggregator;
             regexTokenTypes = new Dictionary<RegexTokenTypes, IClassificationType>();
             regexTokenTypes[RegexTokenTypes.RegexQuantifier] = typeService.GetClassificationType(RegexStrings.RegexQuantifier);
+            regexTokenTypes[RegexTokenTypes.RegexSingleCharacterMatch] = typeService.GetClassificationType(RegexStrings.RegexSingleCharacterMatch);
+            regexTokenTypes[RegexTokenTypes.RegexCaptureGroup] = typeService.GetClassificationType(RegexStrings.RegexCaptureGroup);
+            regexTokenTypes[RegexTokenTypes.RegexEscapeCharacter] = typeService.GetClassificationType(RegexStrings.RegexEscapeCharacter);
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged

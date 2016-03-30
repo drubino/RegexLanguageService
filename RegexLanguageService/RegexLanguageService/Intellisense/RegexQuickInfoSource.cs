@@ -62,12 +62,25 @@ namespace RegexLanguageService.Intellisense
             foreach (var currentTag in tagAggregator.GetTags(new SnapshotSpan(triggerPoint, triggerPoint)))
             {
                 var tagType = currentTag.Tag.Type;
+                var tagSpan = currentTag.Span.GetSpans(textBuffer).First();
                 switch (tagType)
                 {
                     case RegexTokenTypes.RegexQuantifier:
-                        var tagSpan = currentTag.Span.GetSpans(textBuffer).First();
+                        
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
                         quickInfoContent.Add("Quantifier");
+                        break;
+                    case RegexTokenTypes.RegexSingleCharacterMatch:
+                        applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                        quickInfoContent.Add("Range");
+                        break;
+                    case RegexTokenTypes.RegexCaptureGroup:
+                        applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                        quickInfoContent.Add("Capture Group");
+                        break;
+                    case RegexTokenTypes.RegexEscapeCharacter:
+                        applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                        quickInfoContent.Add("Escape Character");
                         break;
                     default:
                         throw new InvalidOperationException(string.Format("Unrecognized RegexTokenType {0}", tagType));

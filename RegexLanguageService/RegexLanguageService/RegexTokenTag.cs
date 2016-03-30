@@ -43,6 +43,9 @@ namespace RegexLanguageService
             _buffer = buffer;
             regexTokenTypes = new Dictionary<string, RegexTokenTypes>();
             regexTokenTypes[RegexStrings.RegexQuantifier] = RegexTokenTypes.RegexQuantifier;
+            regexTokenTypes[RegexStrings.RegexSingleCharacterMatch] = RegexTokenTypes.RegexSingleCharacterMatch;
+            regexTokenTypes[RegexStrings.RegexCaptureGroup] = RegexTokenTypes.RegexCaptureGroup;
+            regexTokenTypes[RegexStrings.RegexEscapeCharacter] = RegexTokenTypes.RegexEscapeCharacter;
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged
@@ -53,21 +56,41 @@ namespace RegexLanguageService
 
         public IEnumerable<ITagSpan<RegexTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
-
             foreach (SnapshotSpan curSpan in spans)
             {
                 var containingLine = curSpan.Start.GetContainingLine();
                 var currentLocation = containingLine.Start.Position;
-                var tokens = containingLine.GetText().ToLower().Split(' ');
+                var tokens = containingLine.GetText().Split(' ');
 
                 foreach (var token in tokens)
                 {
-                    if (regexQuantifiers.Contains(token))
+                    if (regexQuantifiers.Contains(token) || (token.StartsWith("{") && token.EndsWith("}")))
                     {
                         var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
                         if (tokenSpan.IntersectsWith(curSpan))
                             yield return new TagSpan<RegexTokenTag>(tokenSpan,
                                                                   new RegexTokenTag(regexTokenTypes[RegexStrings.RegexQuantifier]));
+                    }
+                    else if (token.StartsWith("[") && token.EndsWith("]"))
+                    {
+                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
+                        if (tokenSpan.IntersectsWith(curSpan))
+                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
+                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexSingleCharacterMatch]));
+                    }
+                    else if (token.StartsWith("(") && token.EndsWith(")"))
+                    {
+                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
+                        if (tokenSpan.IntersectsWith(curSpan))
+                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
+                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexCaptureGroup]));
+                    }
+                    else if (escapeCharacters.Contains(token))
+                    {
+                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
+                        if (tokenSpan.IntersectsWith(curSpan))
+                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
+                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexEscapeCharacter]));
                     }
 
                     //add an extra char location because of the space
@@ -81,6 +104,28 @@ namespace RegexLanguageService
             "?",
             "*",
             "+"
+        };
+
+        private static string[] escapeCharacters = new[]
+        {
+            @"\t",
+            @"\n",
+            @"\r",
+            @"\f", 
+            @"\cX",
+            @"\N",
+            @"\NNN",
+            @"\b", 
+            @"\B", 
+            @"\d", 
+            @"\D",
+            @"\s",     
+            @"\S", 
+            @"\w", 
+            @"\W", 
+            @"\Q",
+            @"\U", 
+            @"\L"
         };
     }
 }

@@ -1,1 +1,1 @@
-﻿? + * ? ? . g
+﻿[a-z] {1,10} [asd] (?:helloworld) \n \NNN \NNN

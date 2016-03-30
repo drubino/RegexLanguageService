@@ -16,6 +16,18 @@ namespace RegexLanguageService.Classification
         [Name(RegexStrings.RegexQuantifier)]
         internal static ClassificationTypeDefinition regexQuantifier = null;
 
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(RegexStrings.RegexSingleCharacterMatch)]
+        internal static ClassificationTypeDefinition regexRange = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(RegexStrings.RegexCaptureGroup)]
+        internal static ClassificationTypeDefinition regexCaptureGroup = null;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(RegexStrings.RegexEscapeCharacter)]
+        internal static ClassificationTypeDefinition regexEscapeCharacter = null;
+
         #endregion
     }
 }

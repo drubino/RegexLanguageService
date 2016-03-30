@@ -23,8 +23,50 @@ namespace RegexLanguageService.Classification
         /// </summary>
         public RegexQuantifier()
         {
-            DisplayName = "Quantifier"; //human readable version of the name
-            ForegroundColor = Colors.BlueViolet;
+            this.DisplayName = "Quantifier"; //human readable version of the name
+            this.ForegroundColor = Colors.BlueViolet;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexSingleCharacterMatch)]
+    [Name(RegexStrings.RegexSingleCharacterMatch)]
+    [UserVisible(false)]
+    [Order(Before = Priority.Default)]
+    internal sealed class RegexSingleCharacterMatch : ClassificationFormatDefinition
+    {
+        public RegexSingleCharacterMatch()
+        {
+            this.DisplayName = "Range";
+            this.ForegroundColor = Colors.Green;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexCaptureGroup)]
+    [Name(RegexStrings.RegexCaptureGroup)]
+    [UserVisible(false)]
+    [Order(Before = Priority.Default)]
+    internal sealed class RegexCaptureGroupMatch : ClassificationFormatDefinition
+    {
+        public RegexCaptureGroupMatch()
+        {
+            this.DisplayName = "Capture Group";
+            this.ForegroundColor = Colors.Crimson;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexEscapeCharacter)]
+    [Name(RegexStrings.RegexEscapeCharacter)]
+    [UserVisible(false)]
+    [Order(Before = Priority.Default)]
+    internal sealed class RegexEscapeCharacter : ClassificationFormatDefinition
+    {
+        public RegexEscapeCharacter()
+        {
+            this.DisplayName = "Escape Character";
+            this.BackgroundColor = Colors.DarkGray;
         }
     }
 }

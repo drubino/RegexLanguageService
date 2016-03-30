@@ -7,6 +7,9 @@ namespace RegexLanguageService
 {
     public enum RegexTokenTypes
     {
-       RegexQuantifier
+       RegexQuantifier,
+       RegexSingleCharacterMatch,
+       RegexCaptureGroup,
+       RegexEscapeCharacter
     }
 }
