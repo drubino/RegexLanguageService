@@ -13,8 +13,8 @@ namespace RegexLanguageService
         public const string RegexQuickInfo = "RegexQuickInfo";
         public const string RegexCompletion = "RegexCompletion";
         public const string RegexQuantifier = "RegexQuantifier";
-        public const string RegexSingleCharacterMatch = "RegexSingleCharacterMatch";
+        public const string RegexCharacterClass = "RegexCharacterClass";
         public const string RegexCaptureGroup = "RegexCaptureGroup";
-        public const string RegexEscapeCharacter = "RegexEscapeCharacter";
+        public const string RegexAnchor = "RegexAnchor";
     }
 }

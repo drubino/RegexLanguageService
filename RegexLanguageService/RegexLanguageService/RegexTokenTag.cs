@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using RegexLanguageService;
+using RegexLanguageService.Parser;
 
 namespace RegexLanguageService
 {
@@ -24,9 +25,9 @@ namespace RegexLanguageService
 
     public class RegexTokenTag : ITag 
     {
-        public RegexTokenTypes Type { get; private set; }
+        public RegexTokenType Type { get; private set; }
 
-        public RegexTokenTag(RegexTokenTypes type)
+        public RegexTokenTag(RegexTokenType type)
         {
             this.Type = type;
         }
@@ -34,19 +35,14 @@ namespace RegexLanguageService
 
     internal sealed class RegexTokenTagger : ITagger<RegexTokenTag>
     {
+        #region Fields
 
-        ITextBuffer _buffer;
-        IDictionary<string, RegexTokenTypes> regexTokenTypes;
+        private ITextBuffer textBuffer;
+        private Dictionary<string, RegexTokenType> regexTokenTypes;
 
-        internal RegexTokenTagger(ITextBuffer buffer)
-        {
-            _buffer = buffer;
-            regexTokenTypes = new Dictionary<string, RegexTokenTypes>();
-            regexTokenTypes[RegexStrings.RegexQuantifier] = RegexTokenTypes.RegexQuantifier;
-            regexTokenTypes[RegexStrings.RegexSingleCharacterMatch] = RegexTokenTypes.RegexSingleCharacterMatch;
-            regexTokenTypes[RegexStrings.RegexCaptureGroup] = RegexTokenTypes.RegexCaptureGroup;
-            regexTokenTypes[RegexStrings.RegexEscapeCharacter] = RegexTokenTypes.RegexEscapeCharacter;
-        }
+        #endregion //Fields
+
+        #region Events
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged
         {
@@ -54,50 +50,68 @@ namespace RegexLanguageService
             remove { }
         }
 
+        #endregion //Events
+
+        #region Constructors
+
+        internal RegexTokenTagger(ITextBuffer buffer)
+        {
+            this.textBuffer = buffer;
+            this.regexTokenTypes = new Dictionary<string, RegexTokenType>();
+            this.regexTokenTypes[RegexStrings.RegexQuantifier] = RegexTokenType.RegexQuantifier;
+            this.regexTokenTypes[RegexStrings.RegexCharacterClass] = RegexTokenType.RegexCharacterClass;
+            this.regexTokenTypes[RegexStrings.RegexCaptureGroup] = RegexTokenType.RegexCaptureGroup;
+            this.regexTokenTypes[RegexStrings.RegexAnchor] = RegexTokenType.RegexAnchor;
+        }
+
+        #endregion //Constructors
+
+        #region Methods
+
         public IEnumerable<ITagSpan<RegexTokenTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
+            var tagSpans = new List<TagSpan<RegexTokenTag>>();
             foreach (SnapshotSpan curSpan in spans)
             {
                 var containingLine = curSpan.Start.GetContainingLine();
                 var currentLocation = containingLine.Start.Position;
-                var tokens = containingLine.GetText().Split(' ');
+                var text = containingLine.GetText();
+                var regexTokens = RegexParser.Parse(text).ToList();
 
-                foreach (var token in tokens)
+                foreach (var token in regexTokens)
                 {
-                    if (regexQuantifiers.Contains(token) || (token.StartsWith("{") && token.EndsWith("}")))
+                    var tokenValue = token.Value;
+                    var tokenType = token.TokenType;
+                    var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, tokenValue.Length));
+                    switch (tokenType)
                     {
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
-                        if (tokenSpan.IntersectsWith(curSpan))
-                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
-                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexQuantifier]));
+                        case RegexTokenType.RegexQuantifier:
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexQuantifier])));
+                            break;
+                        case RegexTokenType.RegexCharacterClass:
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexCharacterClass])));
+                            break;
+                        case RegexTokenType.RegexCaptureGroup:
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexCaptureGroup])));
+                            break;
+                        case RegexTokenType.RegexAnchor:
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexAnchor])));
+                            break;
+                        default:
+                            throw new InvalidOperationException(string.Format("Unrecognized RegexTokenType {0}", tokenType));
                     }
-                    else if (token.StartsWith("[") && token.EndsWith("]"))
-                    {
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
-                        if (tokenSpan.IntersectsWith(curSpan))
-                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
-                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexSingleCharacterMatch]));
-                    }
-                    else if (token.StartsWith("(") && token.EndsWith(")"))
-                    {
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
-                        if (tokenSpan.IntersectsWith(curSpan))
-                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
-                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexCaptureGroup]));
-                    }
-                    else if (escapeCharacters.Contains(token))
-                    {
-                        var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, token.Length));
-                        if (tokenSpan.IntersectsWith(curSpan))
-                            yield return new TagSpan<RegexTokenTag>(tokenSpan,
-                                                                  new RegexTokenTag(regexTokenTypes[RegexStrings.RegexEscapeCharacter]));
-                    }
-
-                    //add an extra char location because of the space
-                    currentLocation += token.Length + 1;
+                    currentLocation += tokenValue.Length;
                 }
             }
+
+            return tagSpans;
         }
+
+        #endregion //Methods
 
         private static string[] regexQuantifiers = new[]
         {

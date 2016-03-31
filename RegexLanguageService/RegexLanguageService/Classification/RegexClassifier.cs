@@ -42,7 +42,7 @@ namespace RegexLanguageService.Classification
     {
         ITextBuffer textBuffer;
         ITagAggregator<RegexTokenTag> tagAggregator;
-        IDictionary<RegexTokenTypes, IClassificationType> regexTokenTypes;
+        IDictionary<RegexTokenType, IClassificationType> regexTokenTypes;
 
         /// <summary>
         /// Construct the classifier and define search tokens
@@ -53,11 +53,11 @@ namespace RegexLanguageService.Classification
         {
             textBuffer = buffer;
             tagAggregator = regexTagAggregator;
-            regexTokenTypes = new Dictionary<RegexTokenTypes, IClassificationType>();
-            regexTokenTypes[RegexTokenTypes.RegexQuantifier] = typeService.GetClassificationType(RegexStrings.RegexQuantifier);
-            regexTokenTypes[RegexTokenTypes.RegexSingleCharacterMatch] = typeService.GetClassificationType(RegexStrings.RegexSingleCharacterMatch);
-            regexTokenTypes[RegexTokenTypes.RegexCaptureGroup] = typeService.GetClassificationType(RegexStrings.RegexCaptureGroup);
-            regexTokenTypes[RegexTokenTypes.RegexEscapeCharacter] = typeService.GetClassificationType(RegexStrings.RegexEscapeCharacter);
+            regexTokenTypes = new Dictionary<RegexTokenType, IClassificationType>();
+            regexTokenTypes[RegexTokenType.RegexQuantifier] = typeService.GetClassificationType(RegexStrings.RegexQuantifier);
+            regexTokenTypes[RegexTokenType.RegexCharacterClass] = typeService.GetClassificationType(RegexStrings.RegexCharacterClass);
+            regexTokenTypes[RegexTokenType.RegexCaptureGroup] = typeService.GetClassificationType(RegexStrings.RegexCaptureGroup);
+            regexTokenTypes[RegexTokenType.RegexAnchor] = typeService.GetClassificationType(RegexStrings.RegexAnchor);
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged

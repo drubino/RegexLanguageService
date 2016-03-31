@@ -14,19 +14,19 @@ namespace RegexLanguageService.Classification
         /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(RegexStrings.RegexQuantifier)]
-        internal static ClassificationTypeDefinition regexQuantifier = null;
+        internal static ClassificationTypeDefinition regexQuantifier;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name(RegexStrings.RegexSingleCharacterMatch)]
-        internal static ClassificationTypeDefinition regexRange = null;
+        [Name(RegexStrings.RegexCharacterClass)]
+        internal static ClassificationTypeDefinition regexRange;
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(RegexStrings.RegexCaptureGroup)]
-        internal static ClassificationTypeDefinition regexCaptureGroup = null;
+        internal static ClassificationTypeDefinition regexCaptureGroup;
 
         [Export(typeof(ClassificationTypeDefinition))]
-        [Name(RegexStrings.RegexEscapeCharacter)]
-        internal static ClassificationTypeDefinition regexEscapeCharacter = null;
+        [Name(RegexStrings.RegexAnchor)]
+        internal static ClassificationTypeDefinition regexAnchor;
 
         #endregion
     }

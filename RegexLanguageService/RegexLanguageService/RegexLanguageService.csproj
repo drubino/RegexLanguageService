@@ -52,6 +52,8 @@
     <Compile Include="Intellisense\RegexQuickInfoSource.cs" />
     <Compile Include="Intellisense\QuickInfoController.cs" />
     <Compile Include="Intellisense\QuickInfoControllerProvider.cs" />
+    <Compile Include="Parser\RegexParser.cs" />
+    <Compile Include="Parser\RegexToken.cs" />
     <Compile Include="RegexTokenTag.cs" />
     <Compile Include="RegexTokenTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -5,11 +5,11 @@ using System.Text;
 
 namespace RegexLanguageService
 {
-    public enum RegexTokenTypes
+    public enum RegexTokenType
     {
        RegexQuantifier,
-       RegexSingleCharacterMatch,
+       RegexCharacterClass,
        RegexCaptureGroup,
-       RegexEscapeCharacter
+       RegexAnchor
     }
 }

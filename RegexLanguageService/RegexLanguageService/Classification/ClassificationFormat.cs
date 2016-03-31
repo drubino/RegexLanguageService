@@ -29,8 +29,8 @@ namespace RegexLanguageService.Classification
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexSingleCharacterMatch)]
-    [Name(RegexStrings.RegexSingleCharacterMatch)]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexCharacterClass)]
+    [Name(RegexStrings.RegexCharacterClass)]
     [UserVisible(false)]
     [Order(Before = Priority.Default)]
     internal sealed class RegexSingleCharacterMatch : ClassificationFormatDefinition
@@ -57,16 +57,16 @@ namespace RegexLanguageService.Classification
     }
 
     [Export(typeof(EditorFormatDefinition))]
-    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexEscapeCharacter)]
-    [Name(RegexStrings.RegexEscapeCharacter)]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexAnchor)]
+    [Name(RegexStrings.RegexAnchor)]
     [UserVisible(false)]
     [Order(Before = Priority.Default)]
-    internal sealed class RegexEscapeCharacter : ClassificationFormatDefinition
+    internal sealed class RegexAnchor : ClassificationFormatDefinition
     {
-        public RegexEscapeCharacter()
+        public RegexAnchor()
         {
-            this.DisplayName = "Escape Character";
-            this.BackgroundColor = Colors.DarkGray;
+            this.DisplayName = "Anchor";
+            this.ForegroundColor = Colors.Yellow;
         }
     }
 }

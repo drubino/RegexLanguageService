@@ -65,22 +65,22 @@ namespace RegexLanguageService.Intellisense
                 var tagSpan = currentTag.Span.GetSpans(textBuffer).First();
                 switch (tagType)
                 {
-                    case RegexTokenTypes.RegexQuantifier:
+                    case RegexTokenType.RegexQuantifier:
                         
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
                         quickInfoContent.Add("Quantifier");
                         break;
-                    case RegexTokenTypes.RegexSingleCharacterMatch:
+                    case RegexTokenType.RegexCharacterClass:
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
                         quickInfoContent.Add("Range");
                         break;
-                    case RegexTokenTypes.RegexCaptureGroup:
+                    case RegexTokenType.RegexCaptureGroup:
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
                         quickInfoContent.Add("Capture Group");
                         break;
-                    case RegexTokenTypes.RegexEscapeCharacter:
+                    case RegexTokenType.RegexAnchor:
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
-                        quickInfoContent.Add("Escape Character");
+                        quickInfoContent.Add("Anchor");
                         break;
                     default:
                         throw new InvalidOperationException(string.Format("Unrecognized RegexTokenType {0}", tagType));
