@@ -28,6 +28,10 @@ namespace RegexLanguageService.Classification
         [Name(RegexStrings.RegexAnchor)]
         internal static ClassificationTypeDefinition regexAnchor;
 
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(RegexStrings.RegexDefault)]
+        internal static ClassificationTypeDefinition regexDefault;
+
         #endregion
     }
 }

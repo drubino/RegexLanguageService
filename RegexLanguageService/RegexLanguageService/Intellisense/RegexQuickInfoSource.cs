@@ -65,8 +65,9 @@ namespace RegexLanguageService.Intellisense
                 var tagSpan = currentTag.Span.GetSpans(textBuffer).First();
                 switch (tagType)
                 {
+                    case RegexTokenType.Default:
+                        break;
                     case RegexTokenType.RegexQuantifier:
-                        
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
                         quickInfoContent.Add("Quantifier");
                         break;

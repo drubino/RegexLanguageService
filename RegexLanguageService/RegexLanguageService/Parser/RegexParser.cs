@@ -19,17 +19,61 @@ namespace RegexLanguageService.Parser
         private static Regex characterClassPartsRegex = new Regex(characterClassParts, RegexOptions.Compiled);
         private static Regex quantifierRegex = new Regex(quantifier, RegexOptions.Compiled);
 
+        private static string[] anchorTags = new[]
+        {
+            "^",
+            "$"
+        };
+
         public static IEnumerable<RegexToken> Parse(string regexPattern)
         {
             var regexTokens = new List<RegexToken>();
             var matches = regularExpressionRegex.Matches(regexPattern).Cast<Match>().ToList();
+            var captureGroupStringBuilder = new StringBuilder();
+            var openParenthesisCount = 0;
+            var inCaptureGroup = false;
             foreach (var match in matches)
             {
                 var stringValue = match.Value;
+                if (inCaptureGroup && stringValue != ")")
+                {
+                    captureGroupStringBuilder.Append(stringValue);
+                    continue;
+                }
+
                 if (stringValue.StartsWith("["))
+                {
                     regexTokens.Add(new RegexToken(stringValue, RegexTokenType.RegexCharacterClass));
+                }
                 else if (quantifierRegex.IsMatch(stringValue))
+                {
                     regexTokens.Add(new RegexToken(stringValue, RegexTokenType.RegexQuantifier));
+                }
+                else if (anchorTags.Contains(stringValue))
+                {
+                    regexTokens.Add(new RegexToken(stringValue, RegexTokenType.RegexAnchor));
+                }
+                else if (stringValue.StartsWith("("))
+                {
+                    inCaptureGroup = true;
+                    openParenthesisCount++;
+                    captureGroupStringBuilder.Append(stringValue);
+                }
+                else if (stringValue == ")")
+                {
+                    openParenthesisCount--;
+                    captureGroupStringBuilder.Append(stringValue);
+                    if (openParenthesisCount == 0)
+                    {
+                        regexTokens.Add(new RegexToken(captureGroupStringBuilder.ToString(), RegexTokenType.RegexCaptureGroup));
+                        inCaptureGroup = false;
+                        captureGroupStringBuilder.Clear();
+                    }
+                }
+                else
+                {
+                    regexTokens.Add(new RegexToken(stringValue, RegexTokenType.Default));
+                }
             }
 
             return regexTokens;

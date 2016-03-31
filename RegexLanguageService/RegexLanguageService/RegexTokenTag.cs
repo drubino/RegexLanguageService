@@ -58,6 +58,7 @@ namespace RegexLanguageService
         {
             this.textBuffer = buffer;
             this.regexTokenTypes = new Dictionary<string, RegexTokenType>();
+            this.regexTokenTypes[RegexStrings.RegexDefault] = RegexTokenType.Default;
             this.regexTokenTypes[RegexStrings.RegexQuantifier] = RegexTokenType.RegexQuantifier;
             this.regexTokenTypes[RegexStrings.RegexCharacterClass] = RegexTokenType.RegexCharacterClass;
             this.regexTokenTypes[RegexStrings.RegexCaptureGroup] = RegexTokenType.RegexCaptureGroup;
@@ -85,6 +86,10 @@ namespace RegexLanguageService
                     var tokenSpan = new SnapshotSpan(curSpan.Snapshot, new Span(currentLocation, tokenValue.Length));
                     switch (tokenType)
                     {
+                        case RegexTokenType.Default:
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexDefault])));
+                            break;
                         case RegexTokenType.RegexQuantifier:
                             if (tokenSpan.IntersectsWith(curSpan))
                                 tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexQuantifier])));

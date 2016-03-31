@@ -69,4 +69,17 @@ namespace RegexLanguageService.Classification
             this.ForegroundColor = Colors.Yellow;
         }
     }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexDefault)]
+    [Name(RegexStrings.RegexDefault)]
+    [UserVisible(false)]
+    [Order(Before = Priority.Default)]
+    internal sealed class RegexDefault : ClassificationFormatDefinition
+    {
+        public RegexDefault()
+        {
+            this.DisplayName = "Default";
+        }
+    }
 }

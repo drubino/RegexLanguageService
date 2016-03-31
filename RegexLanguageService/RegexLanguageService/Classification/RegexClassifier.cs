@@ -58,6 +58,7 @@ namespace RegexLanguageService.Classification
             regexTokenTypes[RegexTokenType.RegexCharacterClass] = typeService.GetClassificationType(RegexStrings.RegexCharacterClass);
             regexTokenTypes[RegexTokenType.RegexCaptureGroup] = typeService.GetClassificationType(RegexStrings.RegexCaptureGroup);
             regexTokenTypes[RegexTokenType.RegexAnchor] = typeService.GetClassificationType(RegexStrings.RegexAnchor);
+            regexTokenTypes[RegexTokenType.Default] = typeService.GetClassificationType(RegexStrings.RegexDefault);
         }
 
         public event EventHandler<SnapshotSpanEventArgs> TagsChanged

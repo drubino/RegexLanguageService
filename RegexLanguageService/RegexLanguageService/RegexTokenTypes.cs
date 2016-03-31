@@ -7,9 +7,10 @@ namespace RegexLanguageService
 {
     public enum RegexTokenType
     {
-       RegexQuantifier,
-       RegexCharacterClass,
-       RegexCaptureGroup,
-       RegexAnchor
+        Default,
+        RegexQuantifier,
+        RegexCharacterClass,
+        RegexCaptureGroup,
+        RegexAnchor
     }
 }
