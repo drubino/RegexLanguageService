@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -26,7 +27,10 @@ namespace RegexLanguageService.Classification
         internal static FileExtensionToContentTypeDefinition RegexFileType = null;
 
         [Import]
-        internal IClassificationTypeRegistryService ClassificationTypeRegistry = null;
+        internal IClassificationTypeRegistryService classificationTypeRegistry = null;
+
+        [Import]
+        internal IClassificationFormatMapService classificationMapService = null;
 
         [Import]
         internal IBufferTagAggregatorFactoryService aggregatorFactory = null;
@@ -34,25 +38,31 @@ namespace RegexLanguageService.Classification
         public ITagger<T> CreateTagger<T>(ITextBuffer buffer) where T : ITag
         {
             var regexTagAggregator = aggregatorFactory.CreateTagAggregator<RegexTokenTag>(buffer);
-            return new RegexClassifier(buffer, regexTagAggregator, ClassificationTypeRegistry) as ITagger<T>;
+            return new RegexClassifier(buffer, regexTagAggregator, this.classificationTypeRegistry, this.classificationMapService) as ITagger<T>;
         }
     }
 
     internal sealed class RegexClassifier : ITagger<ClassificationTag>
     {
-        ITextBuffer textBuffer;
-        ITagAggregator<RegexTokenTag> tagAggregator;
-        IDictionary<RegexTokenType, IClassificationType> regexTokenTypes;
+        private ITextBuffer textBuffer;
+        private ITagAggregator<RegexTokenTag> tagAggregator;
+        private IClassificationTypeRegistryService typeService;
+        private IClassificationFormatMapService mapService;
+        private IDictionary<RegexTokenType, IClassificationType> regexTokenTypes;
 
         /// <summary>
         /// Construct the classifier and define search tokens
         /// </summary>
         internal RegexClassifier(ITextBuffer buffer, 
                                ITagAggregator<RegexTokenTag> regexTagAggregator, 
-                               IClassificationTypeRegistryService typeService)
+                               IClassificationTypeRegistryService typeService,
+                               IClassificationFormatMapService mapService)
         {
-            textBuffer = buffer;
-            tagAggregator = regexTagAggregator;
+            this.textBuffer = buffer;
+            this.tagAggregator = regexTagAggregator;
+            this.typeService = typeService;
+            this.mapService = mapService;
+
             regexTokenTypes = new Dictionary<RegexTokenType, IClassificationType>();
             regexTokenTypes[RegexTokenType.RegexQuantifier] = typeService.GetClassificationType(RegexStrings.RegexQuantifier);
             regexTokenTypes[RegexTokenType.RegexCharacterClass] = typeService.GetClassificationType(RegexStrings.RegexCharacterClass);
@@ -74,13 +84,17 @@ namespace RegexLanguageService.Classification
         /// </summary>
         public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
+            var tags = new List<ITagSpan<ClassificationTag>>();
             foreach (var tagSpan in tagAggregator.GetTags(spans))
             {
+                var tagType = tagSpan.Tag.Type;
                 var tagSpans = tagSpan.Span.GetSpans(spans[0].Snapshot);
-                yield return 
+                tags.Add(
                     new TagSpan<ClassificationTag>(tagSpans[0], 
-                                                   new ClassificationTag(regexTokenTypes[tagSpan.Tag.Type]));
+                                                   new ClassificationTag(regexTokenTypes[tagType])));
             }
+
+            return tags;
         }
     }
 }
