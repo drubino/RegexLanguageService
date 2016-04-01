@@ -7,18 +7,15 @@ namespace RegexLanguageService.Classification
 {
     internal static class OrdinaryClassificationDefinition
     {
-        #region Type definition
+        #region Classification Types
         
-        /// <summary>
-        /// Defines the "regexQuantifier" classification type.
-        /// </summary>
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(RegexStrings.RegexQuantifier)]
         internal static ClassificationTypeDefinition regexQuantifier;
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(RegexStrings.RegexCharacterClass)]
-        internal static ClassificationTypeDefinition regexRange;
+        internal static ClassificationTypeDefinition regexCharacterClass;
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(RegexStrings.RegexCaptureGroup)]
@@ -29,9 +26,17 @@ namespace RegexLanguageService.Classification
         internal static ClassificationTypeDefinition regexAnchor;
 
         [Export(typeof(ClassificationTypeDefinition))]
+        [Name(RegexStrings.RegexEscapeCharacter)]
+        internal static ClassificationTypeDefinition regexEscapeCharacer;
+
+        [Export(typeof(ClassificationTypeDefinition))]
+        [Name(RegexStrings.RegexAlternation)]
+        internal static ClassificationTypeDefinition regexAlternation;
+
+        [Export(typeof(ClassificationTypeDefinition))]
         [Name(RegexStrings.RegexDefault)]
         internal static ClassificationTypeDefinition regexDefault;
 
-        #endregion
+        #endregion //Classification Types
     }
 }

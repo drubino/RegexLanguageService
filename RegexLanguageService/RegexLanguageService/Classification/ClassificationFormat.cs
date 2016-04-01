@@ -33,11 +33,11 @@ namespace RegexLanguageService.Classification
     [Name(RegexStrings.RegexCharacterClass)]
     [UserVisible(false)]
     [Order(Before = Priority.Default)]
-    internal sealed class RegexSingleCharacterMatch : ClassificationFormatDefinition
+    internal sealed class RegexCharacterClass : ClassificationFormatDefinition
     {
-        public RegexSingleCharacterMatch()
+        public RegexCharacterClass()
         {
-            this.DisplayName = "Range";
+            this.DisplayName = "Character Class";
             this.ForegroundColor = Colors.Green;
         }
     }
@@ -67,6 +67,34 @@ namespace RegexLanguageService.Classification
         {
             this.DisplayName = "Anchor";
             this.ForegroundColor = Colors.Yellow;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexEscapeCharacter)]
+    [Name(RegexStrings.RegexEscapeCharacter)]
+    [UserVisible(false)]
+    [Order(Before = Priority.Default)]
+    internal sealed class RegexEscapeCharacter : ClassificationFormatDefinition
+    {
+        public RegexEscapeCharacter()
+        {
+            this.DisplayName = "Escape Characer";
+            this.BackgroundColor = Colors.DarkSlateGray;
+        }
+    }
+
+    [Export(typeof(EditorFormatDefinition))]
+    [ClassificationType(ClassificationTypeNames = RegexStrings.RegexAlternation)]
+    [Name(RegexStrings.RegexAlternation)]
+    [UserVisible(false)]
+    [Order(Before = Priority.Default)]
+    internal sealed class RegexAlternation : ClassificationFormatDefinition
+    {
+        public RegexAlternation()
+        {
+            this.DisplayName = "Alternation";
+            this.ForegroundColor = Colors.Orange;
         }
     }
 

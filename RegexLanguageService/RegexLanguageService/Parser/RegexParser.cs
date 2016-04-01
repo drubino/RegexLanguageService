@@ -25,6 +25,41 @@ namespace RegexLanguageService.Parser
             "$"
         };
 
+        private static string[] escapeCharacters = new[]
+        {
+            @"\t",
+            @"\n",
+            @"\r",
+            @"\f",
+            @"\cX",
+            @"\N",
+            @"\NNN",
+            @"\b",
+            @"\B",
+            @"\d",
+            @"\D",
+            @"\s",
+            @"\S",
+            @"\w",
+            @"\W",
+            @"\Q",
+            @"\U",
+            @"\L",
+            @"\[",
+            @"\\",
+            @"\^",
+            @"\$",
+            @"\.",
+            @"\|",
+            @"\?",
+            @"\*",
+            @"\+",
+            @"\(",
+            @"\)",
+            @"\{",
+            @"\}"
+        };
+
         public static IEnumerable<RegexToken> Parse(string regexPattern)
         {
             var regexTokens = new List<RegexToken>();
@@ -37,6 +72,9 @@ namespace RegexLanguageService.Parser
                 var stringValue = match.Value;
                 if (inCaptureGroup && stringValue != ")")
                 {
+                    if (stringValue.StartsWith("("))
+                        openParenthesisCount++;
+
                     captureGroupStringBuilder.Append(stringValue);
                     continue;
                 }
@@ -52,6 +90,14 @@ namespace RegexLanguageService.Parser
                 else if (anchorTags.Contains(stringValue))
                 {
                     regexTokens.Add(new RegexToken(stringValue, RegexTokenType.RegexAnchor));
+                }
+                else if (escapeCharacters.Contains(stringValue))
+                {
+                    regexTokens.Add(new RegexToken(stringValue, RegexTokenType.RegexEscapeCharacter));
+                }
+                else if (stringValue == "|")
+                {
+                    regexTokens.Add(new RegexToken(stringValue, RegexTokenType.RegexAlternation));
                 }
                 else if (stringValue.StartsWith("("))
                 {

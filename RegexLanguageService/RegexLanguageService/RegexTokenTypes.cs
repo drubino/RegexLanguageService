@@ -11,6 +11,8 @@ namespace RegexLanguageService
         RegexQuantifier,
         RegexCharacterClass,
         RegexCaptureGroup,
-        RegexAnchor
+        RegexAnchor,
+        RegexEscapeCharacter,
+        RegexAlternation
     }
 }

@@ -7,31 +7,27 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace RegexLanguageService.Intellisense
 {
-    #region IIntellisenseControllerProvider
-
     [Export(typeof(IIntellisenseControllerProvider))]
     [Name("Template QuickInfo Controller")]
     [ContentType("text")]
-    internal class TemplateQuickInfoControllerProvider : IIntellisenseControllerProvider
+    internal class QuickInfoControllerProvider : IIntellisenseControllerProvider
     {
-        #region Asset Imports
+        #region Properties
 
         [Import]
         internal IQuickInfoBroker QuickInfoBroker { get; set; }
 
-        #endregion
+        #endregion //Properties
 
-        #region IIntellisenseControllerFactory Members
+        #region Methods
 
         public IIntellisenseController TryCreateIntellisenseController(ITextView textView,
             IList<ITextBuffer> subjectBuffers)
         {
-            return new TemplateQuickInfoController(textView, subjectBuffers, this);
+            return new QuickInfoController(textView, subjectBuffers, this);
         }
 
-        #endregion
+        #endregion //Methods
 
     }
-
-    #endregion
 }

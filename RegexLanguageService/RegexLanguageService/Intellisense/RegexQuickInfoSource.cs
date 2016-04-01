@@ -18,7 +18,6 @@ namespace RegexLanguageService.Intellisense
     [Name(RegexStrings.RegexQuickInfo)]
     class RegexQuickInfoSourceProvider : IQuickInfoSourceProvider
     {
-
         [Import]
         IBufferTagAggregatorFactoryService aggService = null;
 
@@ -33,10 +32,15 @@ namespace RegexLanguageService.Intellisense
     /// </summary>
     class RegexQuickInfoSource : IQuickInfoSource
     {
+        #region Fields
+
         private ITagAggregator<RegexTokenTag> tagAggregator;
         private ITextBuffer textBuffer;
         private bool isDisposed = false;
 
+        #endregion //Fields
+
+        #region Constructors
 
         public RegexQuickInfoSource(ITextBuffer buffer, ITagAggregator<RegexTokenTag> aggregator)
         {
@@ -44,17 +48,20 @@ namespace RegexLanguageService.Intellisense
             this.textBuffer = buffer;
         }
 
+        #endregion //Constructors
+
+        #region Methods
+
         /// <summary>
         /// Determine which pieces of Quickinfo content should be displayed
         /// </summary>
         public void AugmentQuickInfoSession(IQuickInfoSession session, IList<object> quickInfoContent, out ITrackingSpan applicableToSpan)
         {
-            applicableToSpan = null;
-
             if (this.isDisposed)
                 throw new ObjectDisposedException(nameof(RegexQuickInfoSource));
 
-            var triggerPoint = (SnapshotPoint) session.GetTriggerPoint(this.textBuffer.CurrentSnapshot);
+            applicableToSpan = null;
+            var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(this.textBuffer.CurrentSnapshot);
 
             if (triggerPoint == null)
                 return;
@@ -73,7 +80,7 @@ namespace RegexLanguageService.Intellisense
                         break;
                     case RegexTokenType.RegexCharacterClass:
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
-                        quickInfoContent.Add("Range");
+                        quickInfoContent.Add("Character Class");
                         break;
                     case RegexTokenType.RegexCaptureGroup:
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
@@ -82,6 +89,14 @@ namespace RegexLanguageService.Intellisense
                     case RegexTokenType.RegexAnchor:
                         applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
                         quickInfoContent.Add("Anchor");
+                        break;
+                    case RegexTokenType.RegexEscapeCharacter:
+                        applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                        quickInfoContent.Add("Escape Character");
+                        break;
+                    case RegexTokenType.RegexAlternation:
+                        applicableToSpan = this.textBuffer.CurrentSnapshot.CreateTrackingSpan(tagSpan, SpanTrackingMode.EdgeExclusive);
+                        quickInfoContent.Add("Alternation");
                         break;
                     default:
                         throw new InvalidOperationException(string.Format("Unrecognized RegexTokenType {0}", tagType));
@@ -93,6 +108,8 @@ namespace RegexLanguageService.Intellisense
         {
             isDisposed = true;
         }
+
+        #endregion //Methods
     }
 }
 

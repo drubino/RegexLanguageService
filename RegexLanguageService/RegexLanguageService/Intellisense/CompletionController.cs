@@ -16,52 +16,64 @@ using RegexLanguageService;
 
 namespace RegexLanguageService.Intellisense
 {
-    #region Command Filter
-
     [Export(typeof(IVsTextViewCreationListener))]
     [ContentType(RegexStrings.RegexContentType)]
     [TextViewRole(PredefinedTextViewRoles.Interactive)]
     internal sealed class VsTextViewCreationListener : IVsTextViewCreationListener
     {
-        [Import]
-        IVsEditorAdaptersFactoryService AdaptersFactory = null;
+        #region Fields
 
         [Import]
-        ICompletionBroker CompletionBroker = null;
+        private IVsEditorAdaptersFactoryService adaptersFactory;
+
+        [Import]
+        private ICompletionBroker completionBroker;
+
+        #endregion //Fields
+
+        #region Methods
 
         public void VsTextViewCreated(IVsTextView textViewAdapter)
         {
-            IWpfTextView view = AdaptersFactory.GetWpfTextView(textViewAdapter);
+            var view = this.adaptersFactory.GetWpfTextView(textViewAdapter);
             Debug.Assert(view != null);
 
-            CommandFilter filter = new CommandFilter(view, CompletionBroker);
-
-            IOleCommandTarget next;
+            var filter = new CommandFilter(view, completionBroker);
+            var next = null as IOleCommandTarget;
             textViewAdapter.AddCommandFilter(filter, out next);
             filter.Next = next;
         }
+
+        #endregion //Methods
     }
 
     internal sealed class CommandFilter : IOleCommandTarget
     {
-        ICompletionSession _currentSession;
+        #region Fields
 
-        public CommandFilter(IWpfTextView textView, ICompletionBroker broker)
-        {
-            _currentSession = null;
+        ICompletionSession currentSession;
 
-            TextView = textView;
-            Broker = broker;
-        }
+        #endregion //Fields
+
+        #region Properties
 
         public IWpfTextView TextView { get; private set; }
         public ICompletionBroker Broker { get; private set; }
         public IOleCommandTarget Next { get; set; }
 
-        private char GetTypeChar(IntPtr pvaIn)
+        #endregion //Properties
+
+        #region Constructors
+
+        public CommandFilter(IWpfTextView textView, ICompletionBroker broker)
         {
-            return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
+            this.TextView = textView;
+            this.Broker = broker;
         }
+
+        #endregion //Constructors
+
+        #region Methods
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
@@ -102,7 +114,7 @@ namespace RegexLanguageService.Intellisense
                             char ch = GetTypeChar(pvaIn);
                             if (ch == ' ')
                                 StartSession();
-                            else if (_currentSession != null)
+                            else if (currentSession != null)
                                 Filter();
                             break;
                         case VSConstants.VSStd2KCmdID.BACKSPACE:
@@ -113,78 +125,6 @@ namespace RegexLanguageService.Intellisense
             }
 
             return hresult;
-        }
-
-        /// <summary>
-        /// Narrow down the list of options as the user types input
-        /// </summary>
-        private void Filter()
-        {
-            if (_currentSession == null)
-                return;
-
-            _currentSession.SelectedCompletionSet.SelectBestMatch();
-            _currentSession.SelectedCompletionSet.Recalculate();
-        }
-
-        /// <summary>
-        /// Cancel the auto-complete session, and leave the text unmodified
-        /// </summary>
-        bool Cancel()
-        {
-            if (_currentSession == null)
-                return false;
-
-            _currentSession.Dismiss();
-
-            return true;
-        }
-
-        /// <summary>
-        /// Auto-complete text using the specified token
-        /// </summary>
-        bool Complete(bool force)
-        {
-            if (_currentSession == null)
-                return false;
-
-            if (!_currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force)
-            {
-                _currentSession.Dismiss();
-                return false;
-            }
-            else
-            {
-                _currentSession.Commit();
-                return true;
-            }
-        }
-
-        /// <summary>
-        /// Display list of potential tokens
-        /// </summary>
-        bool StartSession()
-        {
-            if (_currentSession != null)
-                return false;
-
-            SnapshotPoint caret = TextView.Caret.Position.BufferPosition;
-            ITextSnapshot snapshot = caret.Snapshot;
-
-            if (!Broker.IsCompletionActive(TextView))
-            {
-                _currentSession = Broker.CreateCompletionSession(TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
-            }
-            else
-            {
-                _currentSession = Broker.GetSessions(TextView)[0];
-            }
-            _currentSession.Dismissed += (sender, args) => _currentSession = null;
-
-            if(!_currentSession.IsStarted)
-                _currentSession.Start();
-
-            return true;
         }
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
@@ -201,7 +141,87 @@ namespace RegexLanguageService.Intellisense
             }
             return Next.QueryStatus(pguidCmdGroup, cCmds, prgCmds, pCmdText);
         }
-    }
 
-    #endregion
+        #endregion //Methods
+
+        #region Utilities
+
+        /// <summary>
+        /// Narrow down the list of options as the user types input
+        /// </summary>
+        private void Filter()
+        {
+            if (this.currentSession == null)
+                return;
+
+            this.currentSession.SelectedCompletionSet.SelectBestMatch();
+            this.currentSession.SelectedCompletionSet.Recalculate();
+        }
+
+        /// <summary>
+        /// Cancel the auto-complete session, and leave the text unmodified
+        /// </summary>
+        private bool Cancel()
+        {
+            if (this.currentSession == null)
+                return false;
+
+            this.currentSession.Dismiss();
+            return true;
+        }
+
+        /// <summary>
+        /// Auto-complete text using the specified token
+        /// </summary>
+        private bool Complete(bool force)
+        {
+            if (this.currentSession == null)
+                return false;
+
+            if (!this.currentSession.SelectedCompletionSet.SelectionStatus.IsSelected && !force)
+            {
+                this.currentSession.Dismiss();
+                return false;
+            }
+            else
+            {
+                this.currentSession.Commit();
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Display list of potential tokens
+        /// </summary>
+        private bool StartSession()
+        {
+            if (this.currentSession != null)
+                return false;
+
+            var caret = TextView.Caret.Position.BufferPosition;
+            var snapshot = caret.Snapshot;
+
+            if (!Broker.IsCompletionActive(TextView))
+            {
+                this.currentSession = Broker.CreateCompletionSession(TextView, snapshot.CreateTrackingPoint(caret, PointTrackingMode.Positive), true);
+            }
+            else
+            {
+                this.currentSession = Broker.GetSessions(TextView)[0];
+            }
+            this.currentSession.Dismissed += (sender, args) => currentSession = null;
+
+            if (!this.currentSession.IsStarted)
+                this.currentSession.Start();
+
+            return true;
+        }
+
+        private char GetTypeChar(IntPtr pvaIn)
+        {
+            return (char)(ushort)Marshal.GetObjectForNativeVariant(pvaIn);
+        }
+
+        #endregion //Utilities
+    }
 }

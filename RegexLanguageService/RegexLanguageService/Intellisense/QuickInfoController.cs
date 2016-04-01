@@ -8,34 +8,32 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace RegexLanguageService.Intellisense
 {
-    #region IIntellisenseController
-
-    internal class TemplateQuickInfoController : IIntellisenseController
+    internal class QuickInfoController : IIntellisenseController
     {
-        #region Private Data Members
+        #region Fields
 
-        private ITextView _textView;
-        private IList<ITextBuffer> _subjectBuffers;
-        private TemplateQuickInfoControllerProvider _componentContext;
+        private ITextView textView;
+        private IList<ITextBuffer> subjectBuffers;
+        private QuickInfoControllerProvider componentContext;
 
         private IQuickInfoSession _session;
 
-        #endregion
+        #endregion //Fields
 
         #region Constructors
 
-        internal TemplateQuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, TemplateQuickInfoControllerProvider componentContext)
+        internal QuickInfoController(ITextView textView, IList<ITextBuffer> subjectBuffers, QuickInfoControllerProvider componentContext)
         {
-            _textView = textView;
-            _subjectBuffers = subjectBuffers;
-            _componentContext = componentContext;
+            this.textView = textView;
+            this.subjectBuffers = subjectBuffers;
+            this.componentContext = componentContext;
 
-            _textView.MouseHover += OnTextViewMouseHover;
+            this.textView.MouseHover += OnTextViewMouseHover;
         }
 
         #endregion
 
-        #region IIntellisenseController Members
+        #region Methods
 
         public void ConnectSubjectBuffer(ITextBuffer subjectBuffer)
         {
@@ -47,23 +45,23 @@ namespace RegexLanguageService.Intellisense
 
         public void Detach(ITextView textView)
         {
-            if (_textView == textView)
+            if (this.textView == textView)
             {
-                _textView.MouseHover -= OnTextViewMouseHover;
-                _textView = null;
+                this.textView.MouseHover -= OnTextViewMouseHover;
+                this.textView = null;
             }
         }
 
-        #endregion
+        #endregion //Methods
 
-        #region Event Handlers
+        #region Utilities
 
         /// <summary>
         /// Determine if the mouse is hovering over a token. If so, highlight the token and display QuickInfo
         /// </summary>
         private void OnTextViewMouseHover(object sender, MouseHoverEventArgs e)
         {
-            SnapshotPoint? point = GetMousePosition(new SnapshotPoint(_textView.TextSnapshot, e.Position));
+            SnapshotPoint? point = GetMousePosition(new SnapshotPoint(textView.TextSnapshot, e.Position));
 
             if (point != null)
             {
@@ -72,18 +70,14 @@ namespace RegexLanguageService.Intellisense
 
                 // Find the broker for this buffer
 
-                if (!_componentContext.QuickInfoBroker.IsQuickInfoActive(_textView))
+                if (!componentContext.QuickInfoBroker.IsQuickInfoActive(textView))
                 {
-                    _session = _componentContext.QuickInfoBroker.CreateQuickInfoSession(_textView, triggerPoint, true);
+                    _session = componentContext.QuickInfoBroker.CreateQuickInfoSession(textView, triggerPoint, true);
                     _session.Start();
                 }
             }
         }
-
-        #endregion
-
-        #region Private Implementation
-
+        
         /// <summary>
         /// get mouse location onscreen. Used to determine what word the cursor is currently hovering over
         /// </summary>
@@ -91,17 +85,15 @@ namespace RegexLanguageService.Intellisense
         {
             // Map this point down to the appropriate subject buffer.
 
-            return _textView.BufferGraph.MapDownToFirstMatch
+            return textView.BufferGraph.MapDownToFirstMatch
                 (
                 topPosition,
                 PointTrackingMode.Positive,
-                snapshot => _subjectBuffers.Contains(snapshot.TextBuffer),
+                snapshot => subjectBuffers.Contains(snapshot.TextBuffer),
                 PositionAffinity.Predecessor
                 );
         }
 
-        #endregion
+        #endregion //Utilities
     }
-
-    #endregion
 }

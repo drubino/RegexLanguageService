@@ -58,6 +58,8 @@ namespace RegexLanguageService.Classification
             regexTokenTypes[RegexTokenType.RegexCharacterClass] = typeService.GetClassificationType(RegexStrings.RegexCharacterClass);
             regexTokenTypes[RegexTokenType.RegexCaptureGroup] = typeService.GetClassificationType(RegexStrings.RegexCaptureGroup);
             regexTokenTypes[RegexTokenType.RegexAnchor] = typeService.GetClassificationType(RegexStrings.RegexAnchor);
+            regexTokenTypes[RegexTokenType.RegexEscapeCharacter] = typeService.GetClassificationType(RegexStrings.RegexEscapeCharacter);
+            regexTokenTypes[RegexTokenType.RegexAlternation] = typeService.GetClassificationType(RegexStrings.RegexAlternation);
             regexTokenTypes[RegexTokenType.Default] = typeService.GetClassificationType(RegexStrings.RegexDefault);
         }
 

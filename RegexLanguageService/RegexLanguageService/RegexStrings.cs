@@ -17,5 +17,7 @@ namespace RegexLanguageService
         public const string RegexCharacterClass = "RegexCharacterClass";
         public const string RegexCaptureGroup = "RegexCaptureGroup";
         public const string RegexAnchor = "RegexAnchor";
+        public const string RegexEscapeCharacter = "RegexEscapeCharacter";
+        public const string RegexAlternation = "RegexAlternation";
     }
 }

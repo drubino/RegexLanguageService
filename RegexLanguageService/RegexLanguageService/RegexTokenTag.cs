@@ -63,6 +63,8 @@ namespace RegexLanguageService
             this.regexTokenTypes[RegexStrings.RegexCharacterClass] = RegexTokenType.RegexCharacterClass;
             this.regexTokenTypes[RegexStrings.RegexCaptureGroup] = RegexTokenType.RegexCaptureGroup;
             this.regexTokenTypes[RegexStrings.RegexAnchor] = RegexTokenType.RegexAnchor;
+            this.regexTokenTypes[RegexStrings.RegexEscapeCharacter] = RegexTokenType.RegexEscapeCharacter;
+            this.regexTokenTypes[RegexStrings.RegexAlternation] = RegexTokenType.RegexAlternation;
         }
 
         #endregion //Constructors
@@ -106,6 +108,14 @@ namespace RegexLanguageService
                             if (tokenSpan.IntersectsWith(curSpan))
                                 tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexAnchor])));
                             break;
+                        case RegexTokenType.RegexEscapeCharacter:
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexEscapeCharacter])));
+                            break;
+                        case RegexTokenType.RegexAlternation:
+                            if (tokenSpan.IntersectsWith(curSpan))
+                                tagSpans.Add(new TagSpan<RegexTokenTag>(tokenSpan, new RegexTokenTag(regexTokenTypes[RegexStrings.RegexAlternation])));
+                            break;
                         default:
                             throw new InvalidOperationException(string.Format("Unrecognized RegexTokenType {0}", tokenType));
                     }
@@ -117,34 +127,5 @@ namespace RegexLanguageService
         }
 
         #endregion //Methods
-
-        private static string[] regexQuantifiers = new[]
-        {
-            "?",
-            "*",
-            "+"
-        };
-
-        private static string[] escapeCharacters = new[]
-        {
-            @"\t",
-            @"\n",
-            @"\r",
-            @"\f", 
-            @"\cX",
-            @"\N",
-            @"\NNN",
-            @"\b", 
-            @"\B", 
-            @"\d", 
-            @"\D",
-            @"\s",     
-            @"\S", 
-            @"\w", 
-            @"\W", 
-            @"\Q",
-            @"\U", 
-            @"\L"
-        };
     }
 }

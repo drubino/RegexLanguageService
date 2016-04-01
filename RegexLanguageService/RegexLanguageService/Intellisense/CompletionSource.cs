@@ -25,21 +25,34 @@ namespace RegexLanguageService.Intellisense
 
     class RegexCompletionSource : ICompletionSource
     {
+        #region Fields
+
         private ITextBuffer textBuffer;
         private bool isDisposed = false;
-        
+
+        #endregion //Fields
+
+        #region Constructors
+
         public RegexCompletionSource(ITextBuffer buffer)
         {
             this.textBuffer = buffer;
         }
+
+        #endregion //Constructors
+
+        #region Methods
 
         public void AugmentCompletionSession(ICompletionSession session, IList<CompletionSet> completionSets)
         {
             if (this.isDisposed)
                 throw new ObjectDisposedException(nameof(RegexCompletionSource));
 
-            List<Completion> completions = new List<Completion>();
-            
+            List<Completion> completions = new List<Completion>()
+            {
+                new Completion("Hi")
+            };
+
             ITextSnapshot snapshot = this.textBuffer.CurrentSnapshot;
             var triggerPoint = (SnapshotPoint)session.GetTriggerPoint(snapshot);
 
@@ -63,6 +76,8 @@ namespace RegexLanguageService.Intellisense
         {
             isDisposed = true;
         }
+
+        #endregion //Methods
     }
 }
 
